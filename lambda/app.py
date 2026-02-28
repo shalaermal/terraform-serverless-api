@@ -8,19 +8,35 @@ table = dynamodb.Table("tasks-table")
 
 
 def lambda_handler(event, context):
-    task_id = str(uuid.uuid4())
+    method = event.get("requestContext", {}).get("http", {}).get("method")
 
-    item = {
-        "id": task_id,
-        "created_at": datetime.utcnow().isoformat()
-    }
+    if method == "GET":
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "Serverless API is running"
+            })
+        }
 
-    table.put_item(Item=item)
+    if method == "POST":
+        task_id = str(uuid.uuid4())
+
+        item = {
+            "id": task_id,
+            "created_at": datetime.utcnow().isoformat()
+        }
+
+        table.put_item(Item=item)
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "message": "Task created",
+                "id": task_id
+            })
+        }
 
     return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": "Task created",
-            "id": task_id
-        })
+        "statusCode": 400,
+        "body": "Unsupported method"
     }

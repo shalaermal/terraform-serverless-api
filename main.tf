@@ -56,3 +56,48 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
     }]
   })
 }
+
+#HTTP API
+resource "aws_apigatewayv2_api" "http_api" {
+  name          = "terraform-serverless-api"
+  protocol_type = "HTTP"
+}
+
+#Integration with Lambda
+resource "aws_apigatewayv2_integration" "lambda_integration" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  integration_type = "AWS_PROXY"
+
+  integration_uri        = aws_lambda_function.basic_lambda.invoke_arn
+  payload_format_version = "2.0"
+}
+
+#route
+resource "aws_apigatewayv2_route" "post_task" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /task"
+
+  target = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+#Stage auto deploy
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+#Lambda permission API Gateway
+resource "aws_lambda_permission" "api_permission" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.basic_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+#Output URL
+output "api_url" {
+  value = aws_apigatewayv2_api.http_api.api_endpoint
+}
+
