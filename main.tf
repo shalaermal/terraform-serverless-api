@@ -41,3 +41,18 @@ resource "aws_lambda_function" "basic_lambda" {
   source_code_hash = filebase64sha256("lambda/function.zip")
 }
 
+resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
+  name = "lambda-dynamodb-policy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "dynamodb:PutItem"
+      ]
+      Resource = aws_dynamodb_table.tasks.arn
+    }]
+  })
+}
