@@ -1,208 +1,181 @@
-Terraform Serverless API (AWS)
+# Terraform Serverless API (AWS)
 
-A fully serverless REST API built and deployed on AWS using Terraform (Infrastructure as Code).
+A fully serverless REST API deployed on AWS using Terraform (Infrastructure as Code).
 
-This project provisions a production-style cloud architecture using:
+---
 
-AWS Lambda (Python 3.9)
+## Overview
 
-Amazon API Gateway (HTTP API v2)
+This project provisions a production-style serverless architecture using:
 
-Amazon DynamoDB
+- AWS Lambda (Python 3.9)
+- Amazon API Gateway (HTTP API v2)
+- Amazon DynamoDB
+- IAM roles with least-privilege access
+- Fully managed via Terraform
 
-IAM roles with least-privilege access
+Infrastructure lifecycle is fully automated:
 
-Fully managed via Terraform
+provision → test → destroy
 
-Architecture Overview
+---
 
-Client (Browser / HTTP Request)
-→ API Gateway (HTTP API)
-→ AWS Lambda (Python)
+## Architecture
+
+Client (Browser / HTTP Request)  
+→ API Gateway (HTTP API)  
+→ AWS Lambda (Python)  
 → DynamoDB (tasks-table)
 
 This architecture is fully serverless:
 
-No EC2
+- No EC2
+- No servers
+- No manual provisioning
+- Fully managed infrastructure
 
-No servers
+---
 
-No manual provisioning
+## Tech Stack
 
-Fully managed infrastructure
+- Terraform
+- AWS Lambda (Python 3.9)
+- Amazon API Gateway (HTTP API v2)
+- Amazon DynamoDB
+- AWS IAM
+- REST API
 
-🛠 Tech Stack
+---
 
-Terraform
-
-AWS Lambda (Python 3.9)
-
-Amazon API Gateway (HTTP API)
-
-Amazon DynamoDB
-
-AWS IAM
-
-REST API
-
-Infrastructure Provisioning
+## Infrastructure Provisioning
 
 All AWS resources were created using Terraform.
 
-Commands Used
+### Commands Used
+
+```bash
 terraform init
 terraform plan
 terraform apply
-Terraform Apply (Successful Provisioning)
+```
 
-Infrastructure provisioned successfully using Terraform.
+---
 
-API Gateway
+### Cleanup
 
-HTTP API deployed in eu-central-1 (Frankfurt region).
+To remove all AWS resources:
 
-API Overview
+```bash
+terraform destroy
+```
 
-Configured Routes
+---
 
-GET / → Health check endpoint
+## API Endpoints
 
-POST /task → Create new task
+### Health Check
 
-Lambda Integration
-
-API Gateway integrated with Lambda using AWS_PROXY integration.
-
-AWS Lambda
-
-Lambda function deployed and configured via Terraform.
-
-Runtime: Python 3.9
-
-Handler: app.lambda_handler
-
-Integrated with API Gateway
-
-IAM permissions configured
-
-Lambda Overview
-
-Successful Lambda Execution
-
-Lambda tested from AWS Console and returned a successful response.
-
-DynamoDB
-
-DynamoDB table: tasks-table
-
-Configuration:
-
-Billing mode: PAY_PER_REQUEST
-
-Partition key: id (String)
-
-Fully managed via Terraform
-
-Stored Items After API Calls
-
-Tasks were successfully created and stored via the API.
-
-Public API Access
-
-The API is publicly accessible via HTTPS endpoint.
-
-Health Check Endpoint (Browser Access)
-GET https://<api-id>.execute-api.eu-central-1.amazonaws.com/
+```
+GET /
+```
 
 Response:
 
+```json
 {
   "message": "Serverless API is running"
 }
+```
 
-Example API Usage
-Create Task
+---
+
+### Create Task
+
+```
 POST /task
+```
 
 Response:
 
+```json
 {
   "message": "Task created",
   "id": "generated-uuid"
 }
+```
 
-Flow:
+---
 
-API Gateway receives request
+## Screenshots
 
-Lambda is invoked
+### Terraform Apply (Provisioning)
 
-Data is stored in DynamoDB
+![Terraform Apply](screenshots/01-terraform-apply.png)
 
-JSON response is returned
+---
 
-IAM & Security
+### API Gateway Overview
 
-IAM role configured with:
+![API Gateway Overview](screenshots/02-api-gateway-overview.png)
 
-AWSLambdaBasicExecutionRole (CloudWatch logging)
+---
 
-Custom DynamoDB policy allowing:
+### API Routes
 
-dynamodb:PutItem
+![API Routes](screenshots/03-api-routes.png)
 
-Principle of least privilege applied.
+---
 
-Infrastructure Cleanup
+### API Integration (Lambda)
 
-All resources destroyed using:
+![API Integration](screenshots/04-api-integration.png)
 
-terraform destroy
-Terraform Destroy (Clean Teardown)
+---
 
-Ensures:
+### Lambda Overview
 
-No remaining AWS resources
+![Lambda Overview](screenshots/05-lambda-overview.png)
 
-No ongoing cloud costs
+---
 
-Clean infrastructure lifecycle
+### Lambda Test Success
 
-What This Project Demonstrates
+![Lambda Test Success](screenshots/06-lambda-test-success.png)
 
-Infrastructure as Code (Terraform)
+---
 
-Serverless architecture design
+### DynamoDB Items Stored
 
-API Gateway + Lambda integration
+![DynamoDB Items](screenshots/07-dynamodb-items.png)
 
-DynamoDB data persistence
+---
 
-IAM permission management
+### Public API – Browser Access
 
-Cloud deployment lifecycle (apply → destroy)
+![Health Endpoint](screenshots/08-browser-health-endpoint.png)
 
-Public HTTPS endpoint exposure
+---
 
-Clean resource teardown
+### Terraform Destroy (Clean Teardown)
 
-How To Deploy
+![Terraform Destroy](screenshots/09-terraform-destroy.png)
 
-Configure AWS credentials
+---
 
-Run:
+## What This Project Demonstrates
 
-terraform init
-terraform apply
+- Infrastructure as Code (Terraform)
+- Fully serverless AWS architecture
+- API Gateway + Lambda integration
+- DynamoDB data persistence
+- IAM least-privilege security model
+- Automated infrastructure lifecycle (apply → destroy)
 
-Use returned api_url
+---
 
-To remove infrastructure:
-terraform destroy
+## Project Status
 
-
-Project Status
-✔ Infrastructure provisioned successfully
-✔ API fully operational
-✔ Data persistence working
-✔ Infrastructure destroyed cleanly
+- Infrastructure provisioned successfully
+- API fully operational
+- Data persistence verified
+- Infrastructure destroyed cleanly
